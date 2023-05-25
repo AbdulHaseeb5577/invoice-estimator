@@ -1,8 +1,6 @@
 import React from 'react';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import { useMutation } from '@apollo/client';
-import { CREATE_INVOICE } from './mutation/mutations';
 
 export const Popup = ({ show, closeModal, formValues, selectedRow, selectedDate}) => { 
 
@@ -95,47 +93,6 @@ export const Popup = ({ show, closeModal, formValues, selectedRow, selectedDate}
       // Save the document
      doc.save("form-data.pdf");
   }
-
-  const token = localStorage.getItem('token');
-
-
-  
-  const [createOrderInvoice] = useMutation(CREATE_INVOICE, {
-    context: {
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
-    },
-  });
-  console.log(";;;;;;;;;;;;;;;;;uuuuuuuu",CREATE_INVOICE)
-  
-  const createOrderInvoiceHandler = async (selectedRow, formValues) => {
-    try {
-      const chked_box_val = selectedRow.map(row => ({
-        product_id: row.id,
-        product_qty: row.quantity
-      }));
-
-  
-      const { data } = await createOrderInvoice({
-        variables: {
-          chked_box_val,
-          coupon_code: formValues.couponCode,
-          first_name: formValues.firstName,
-          last_name: formValues.lastName,
-          customer_address: formValues.address,
-          customer_number: formValues.customerNumber,
-          discount_amount: formValues.discountAmount
-        }
-      });
-      console.log(";;;;;;;;;;;;;;;;;;;;;;;;;;;;;asd", selectedRow,formValues, );
-    } catch (error) {
-      console.log('ooooooooooo',error,selectedRow,formValues,formValues.customerAddress);
-    }
-  };
-
-
-
   const total = selectedRow.reduce((acc, val) => {
     return acc + (val.quantity * val.price_range.minimum_price.regular_price.value);
   }, 0);
@@ -172,7 +129,6 @@ export const Popup = ({ show, closeModal, formValues, selectedRow, selectedDate}
         <div className='PdfDownload'> 
         <button onClick={() => {
         downloadPDF();
-        createOrderInvoiceHandler(selectedRow, formValues);
         }}>Download as PDF</button>
 
         </div>

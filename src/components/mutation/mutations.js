@@ -25,35 +25,24 @@ mutation PlaceOrder($id:Int!) {
   }
 }
 `
-export const CREATE_INVOICE = gql`
-mutation createOrderInvoice ($first_name:String, $last_name: String,$customer_address:String, $customer_number: Int, $discount_amount: Float, $coupon_code: Int, 
-$chked_box_val: [ItemsIds]!){
-  invoiceEstimator(input: { 
-   chked_box_val:$chked_box_val
-    coupon_code:$coupon_code
-    first_name:$first_name
-    last_name:$last_name
-    customer_address:$customer_address
-    customer_number:$customer_number
-    discount_amount:$discount_amount
-  }
-    )
 
-  {
-    invoice_estimator {
-      customer_address
-      customer_name
-      customer_number
-      discount_amount
-      estimate_id
-      id
+export const CREATE_INVOICE_MUTATION = gql`
+  mutation invoIceEstimator($input: InvoiceInput!) {
+    invoIceEstimator(input: $input) {
+      invoice_estimator {
+        discount_value_with_currency
+        total_with_currency
+        customer_discount_with_currency
+        invoice_data {
+          name
+          price
+          quantity
+          custom_option
+          total_product_price
+        }
+      }
+      message
+      status
     }
-    message
-    selected_products {
-      product_id
-      product_qty
-    }
-    status
   }
-}
 `;

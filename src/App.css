@@ -39,7 +39,16 @@ td {
     border-radius: 20px;
     padding-left: 20px;
 }
-
+.UserForm select{
+    width: 98%;
+    border: 2px solid #F8F2A7;
+    color: #4B5F5B;
+    transition: all 500ms ease-out;
+    height: 40px;
+    margin-bottom: 0px;
+    border-radius: 20px;
+    padding-left: 20px;
+}
 .UserForm label {
     font-size: 18px;
     margin: 0px 15px;

@@ -48,7 +48,7 @@ const columns = [
   { field: 'quantity', headerName: 'Quantity', flex: 2, renderCell: (params) => <input type="number" value={params.row.quantity} onChange={(event) => onQuantityChange(event, params.row.id)}/> },
   { field: 'price', headerName: 'Price', flex: 1, renderCell: (params) => `${params.row.price_range?.minimum_price?.regular_price?.value} ${params.row.price_range?.minimum_price?.regular_price?.currency}` },
   {
-    field: 'customOption',
+    field: 'customoption',
     headerName: 'Custom Option',
     flex: 1,
     renderCell: (params) => (
@@ -64,14 +64,14 @@ const [selectedRow, setSelectedRows] = React.useState({});
 const onCustomOptionChange = (event, id) => {
   const newCustomOption = event.target.value;
   const updatedSelectedRows = { ...selectedRow };
-  updatedSelectedRows[id] = { ...updatedSelectedRows[id], customOption: newCustomOption };
+  updatedSelectedRows[id] = { ...updatedSelectedRows[id], customoption: newCustomOption };
 
   // Update quantity field
   const existingQuantity = updatedSelectedRows[id]?.quantity;
   updatedSelectedRows[id] = { ...updatedSelectedRows[id], quantity: existingQuantity || 1 };
 
   setSelectedRows(updatedSelectedRows);
-  props.handleSelectedRow(Object.values(selectedRow));
+  props.handleSelectedRow(Object.values(updatedSelectedRows));
 };
 const onQuantityChange = (event, id) => {
   const newQuantity = event.target.value;
@@ -79,8 +79,8 @@ const onQuantityChange = (event, id) => {
   updatedSelectedRows[id] = { ...updatedSelectedRows[id], quantity: newQuantity };
 
   // Update customOption field
-  const existingCustomOption = updatedSelectedRows[id]?.customOption;
-  updatedSelectedRows[id] = { ...updatedSelectedRows[id], customOption: existingCustomOption || '' };
+  const existingCustomOption = updatedSelectedRows[id]?.customoption;
+  updatedSelectedRows[id] = { ...updatedSelectedRows[id], customoption: existingCustomOption || '' };
 
   setSelectedRows(updatedSelectedRows);
   props.handleSelectedRow(Object.values(updatedSelectedRows));
