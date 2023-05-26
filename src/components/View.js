@@ -1,89 +1,129 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
-import { GridActionsCellItem, GridRowParams, } from '@mui/x-data-grid';
+import { Button, Modal } from '@mui/material';
+import { GridActionsCellItem } from '@mui/x-data-grid';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useMutation } from '@apollo/client';
+import { InMemoryCache, createHttpLink, useMutation } from '@apollo/client';
 import { DELETE_ORDER } from './mutation/mutations';
 import { PLACE_ORDER } from './mutation/mutations';
+import { VIEW_POPUP_ESTIMATOR } from './mutation/mutations'
+import { ApolloClient } from 'apollo-client';
+
 const token = localStorage.getItem('token');
-console.log("view",token);
-const graphqlEndpoint = "http://localhost:3000/graphql";
-
+// console.log('view', token);
+const graphqlEndpoint = 'http://localhost:3000/graphql';
 const headers = {
-  "Content-Type": "application/json",
-  "Authorization": `Bearer ${token}`
+  'Content-Type': 'application/json',
+  Authorization: `Bearer ${token}`,
 };
-const graphqlQuery = `{ invoiceestimator_view 
-    { 
-        customer_address 
-            customer_name 
-                estimate_id 
-                discount_amount
-                    id 
-                        order_status 
-                            total 
-                        } 
 
+const httpLink = createHttpLink({
+  uri: graphqlEndpoint,
+  headers: headers,
+});
+
+const client = new ApolloClient({
+  link: httpLink,
+  cache: new InMemoryCache(),
+});
+
+
+
+const graphqlQuery = `{
+  invoiceestimator_view {
+    customer_address
+    customer_name
+    estimate_id
+    discount_amount
+    id
+    order_status
+    total
+  }
 }`;
 
-
 export const View = () => {
+  const [modalOpen, setModalOpen] = React.useState(false);
+  const [selectedOrderId, setSelectedOrderId] = React.useState(null);
+  const [deleteInvoiceEstimator] = useMutation(DELETE_ORDER);
+  const [orderPlace] = useMutation(PLACE_ORDER);
 
-    const [deleteInvoiceEstimator]=useMutation(DELETE_ORDER);
-    const HandleDelete = async (id,e) => {
-        window.location.reload();
-        console.log("delete", id);
-        // return id;
-    
-        try{
-            const{data}=await deleteInvoiceEstimator({
-                variables:{
-                    id
-                }
-            }
+  console.log ("selectedOrderId",selectedOrderId)
+  const handleDelete = async (id) => {
+    window.location.reload();
+    console.log('delete', id);
 
-            );
-        }catch(error){
-            console.log(error);
+    try {
+      const { data } = await deleteInvoiceEstimator({
+        variables: {
+          id,
+        },
+      });
+      console.log("delete",data)
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handlePlaceOrder = async (id) => {
+    console.log('placed', id);
+
+    try {
+      const { data } = await orderPlace({
+        variables: {
+          id,
+        },
+      });
+      console.log("place",data)
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const downloadPDF = () => {
+    // Add code to download the PDF
+  };
+
+  const handleEdit = (id) => {
+    window.location.href = `/Edit?id=${id}`;
+  };
+
+  const HandleView = async (id) => {
+    setSelectedOrderId(id);
+    setModalOpen(true);
+
+    try {
+      const { data } = await client.mutate({
+        mutation: VIEW_POPUP_ESTIMATOR,
+        variables: {
+          estimateId: parseInt(id),
+        },
+        context: {
+          headers: headers
         }
-      };
-      const [orderPlace]=useMutation(PLACE_ORDER);
-      const HandlePlaceOrder = async (id,e) => {
-          window.location.reload();
-          console.log("placed", id);
-          // return id;
-      
-          try{
-              const{data}=await orderPlace({
-                  variables:{
-                      id
-                  }
-              }
-  
-              );
-          }catch(error){
-              console.log(error);
-          }
-        };
-    
-      const handleEdit = (id) => {
-        window.location.href = `/Edit?id=${id}`;
-      };
-      const handleView = (id) => {
-        // Implement print logic here
-      };
+      });
+      // Handle the response data as needed
+      console.log(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+  };
+
   const [rows, setRows] = React.useState([]);
 
   React.useEffect(() => {
     fetch(graphqlEndpoint, {
-      method: "POST",
+      method: 'POST',
       headers: headers,
-      body: JSON.stringify({ query: graphqlQuery })
+      body: JSON.stringify({ query: graphqlQuery }),
     })
-      .then(response => response.json())
-      .then(data => {
-        const rowsData = data.data.invoiceestimator_view.map(item => ({
+      .then((response) => response.json())
+      .then((data) => {
+        const rowsData = data.data.invoiceestimator_view.map((item) => ({
           id: item.id,
           name: item.customer_name,
           discount: item.discount_amount,
@@ -94,10 +134,8 @@ export const View = () => {
         }));
         setRows(rowsData);
       })
-      .catch(error => console.error(error));
+      .catch((error) => console.error(error));
   }, []);
-
-
 
   const columns = React.useMemo(
     () => [
@@ -105,18 +143,18 @@ export const View = () => {
       { field: 'name', headerName: 'Name', width: 180 },
       { field: 'discount', headerName: 'Discount', width: 120 },
       { field: 'address', headerName: 'Address', width: 250 },
-      { field: 'number', headerName: 'Number', width: 100},
+      { field: 'number', headerName: 'Number', width: 100 },
       { field: 'price', headerName: 'Price', width: 140 },
       {
         field: 'actions',
         headerName: 'Actions',
         sortable: false,
         width: 312,
-        renderCell: (params: GridRowParams ) => (
-          <div className='ViewAction'>
+        renderCell: (params) => (
+          <div className="ViewAction">
             <GridActionsCellItem
               icon={<DeleteIcon />}
-              onClick={() => HandleDelete(params.id)}
+              onClick={() => handleDelete(params.id)}
             />
             <GridActionsCellItem
               icon={<button>edit</button>}
@@ -125,23 +163,23 @@ export const View = () => {
             />
             <GridActionsCellItem
               icon={<button>View</button>}
-              onClick={() => handleView(params.id)}
+              onClick={() => HandleView(params.id)}
               showInMenu
             />
             <GridActionsCellItem
               icon={<button>PlaceOrder</button>}
-              onClick={() => HandlePlaceOrder(params.id)}
+              onClick={() => handlePlaceOrder(params.id)}
               showInMenu
             />
           </div>
-        )
-      }
+        ),
+      },
     ],
     []
   );
-  
+
   return (
-    <Box sx={{ height: 600, width: "100%" }}>
+    <Box sx={{ height: 600, width: '100%' }}>
       <DataGrid
         rows={rows}
         columns={columns}
@@ -158,8 +196,63 @@ export const View = () => {
           },
         }}
       />
+      <Modal
+        open={modalOpen}
+        onClose={handleCloseModal}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box className="View-popup">
+          <Button onClick={handleCloseModal} className="CloseButton View">
+            Close
+          </Button>
+          <div>
+            <div className="popup-content">
+              <h2>
+                Your Invoice Estimator Pdf is Generated. Download Your Invoice Pdf.
+              </h2>
+              <table className="popUpTable">
+                <thead>
+                <tr className="popUpTableHead">
+                  <th>Name</th>
+                  <th>Fitting Charges</th>
+                  <th>Quantity</th>
+                  <th>Product Price</th>
+                  <th>Total</th>
+                </tr>
+                </thead>
+
+                <div className="GrandTotalsec">
+                <div>
+                <h2>Grand Total:</h2>
+                <p></p>
+                </div>
+                <div>
+                <h2>Discount amount:</h2>
+                <p></p>
+                </div>
+                <div>
+                <h2>Payable:</h2>
+                 <p></p>
+                 </div>
+                <div className="PdfDownload">
+                  <button
+                    onClick={() => {
+                      downloadPDF();
+                    }}
+                  >
+                    Download as PDF
+                  </button>
+                </div>
+              </div>
+              </table>
+
+            </div>
+          </div>
+        </Box>
+      </Modal>
     </Box>
   );
-      }  
+};
 
 export default View;

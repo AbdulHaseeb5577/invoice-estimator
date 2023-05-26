@@ -39,6 +39,16 @@ td {
     border-radius: 20px;
     padding-left: 20px;
 }
+.View-popup{
+    background-color: white;
+    height: auto;
+    width: 80%;
+    margin: auto;
+    margin-top: 30px;
+    padding-top: 20px;
+    padding-left: 40px;
+    padding-right: 40px;
+}
 .UserForm select{
     width: 98%;
     border: 2px solid #F8F2A7;
@@ -171,9 +181,10 @@ td {
   .popUpTable{
     width: 100%;
     border-collapse: collapse;
+    overflow-x: scroll;
+    height: fit-content;
   }
   .GrandTotalsec {
-    float: right;
     margin-top: 30px;
     margin-right: 40px
 }
@@ -207,4 +218,12 @@ margin-bottom: 20px;
   border: 2px solid brown;
   font-size: 18px;
   right: 10px;
+}
+.CloseButton.View{
+    color: red;
+    top:10px;
+    right:50px;
+}
+.View-GrandTotalsec div{
+    display: flex;
 }

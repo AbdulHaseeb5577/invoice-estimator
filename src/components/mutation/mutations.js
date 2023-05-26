@@ -46,3 +46,39 @@ export const CREATE_INVOICE_MUTATION = gql`
     }
   }
 `;
+export const GET_INVOICE_ESTIMATOR_VIEW = gql`
+  query GetInvoiceEstimatorView {
+    invoiceestimator_view {
+      customer_address
+      customer_name
+      estimate_id
+      discount_amount
+      discount_type
+      id
+      order_status
+      customer_number
+      customer_email
+      total
+    }
+  }
+`;
+export const VIEW_POPUP_ESTIMATOR = gql`
+  mutation ViewPopupEstimator($estimateId: Int!) {
+    popupInvoiceEstimatorView(input: { estimate_invoice_id: $estimateId }) {
+      message
+      status
+      edit_invoice_estimator {
+        discount_value_with_currency
+        total_with_currency
+        customer_discount_with_currency
+        invoice_data {
+          name
+          price
+          quantity
+          custom_option
+          total_product_price
+        }
+      }
+    }
+  }
+`;
