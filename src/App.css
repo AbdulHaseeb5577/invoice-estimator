@@ -1,3 +1,4 @@
+
 .ProductImage img {
     width: 100%;
     max-width: 550px;
@@ -41,13 +42,13 @@ td {
 }
 .View-popup{
     background-color: white;
-    height: auto;
     width: 80%;
     margin: auto;
     margin-top: 30px;
     padding-top: 20px;
     padding-left: 40px;
     padding-right: 40px;
+    height: 80vh;
 }
 .UserForm select{
     width: 98%;
@@ -106,6 +107,10 @@ td {
 .LoginContainer {
     display: flex;
     justify-content: center;
+    width: 100%;
+    height: 100vh;
+    background-color: orange;
+    
 }
 .LoginContainer img{
     margin-bottom: 20px;
@@ -116,12 +121,14 @@ td {
     flex-direction: column;
     align-items: center;
     background: #4B5F5B;
-    margin: 20px 50px;
     padding: 30px;
-    width: 320px;
-    height: 380px;
+    width: 100%;
+    max-width: 50%;
+    height: 100vh;
+    max-height: 60vh;
     border-radius: 15px;
     box-shadow: 0px 5px 9px 3px #64896A;
+    margin: auto;
 }
 
 .LoginForm h1 {
@@ -136,9 +143,12 @@ td {
     color: #4B5F5B;
     transition: all 500ms ease-out;
     height: 30px;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
     border-radius: 20px;
     padding-left: 20px;
+    width: 100%;
+    max-width: 50%;
+    font-size: 1rem;
 }
 .LoginForm input:focus {
     border: 2px solid #C0E66E;
@@ -224,6 +234,177 @@ margin-bottom: 20px;
     top:10px;
     right:50px;
 }
-.View-GrandTotalsec div{
+.GrandTotalsec div{
     display: flex;
 }
+.GrandTotalsec p{
+    margin: 1px;
+    margin-left: 4px;
+
+}
+.popUpTable {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .popUpTable th,
+  .popUpTable td {
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .popUpTableHead {
+    background-color: #f2f2f2;
+  }
+  
+  .GrandTotalsec {
+    text-align: right;
+    float: right;
+  }
+  
+  .PdfDownload {
+    text-align: right;
+    margin-top: 10px;
+  }
+  
+  .PdfDownload button {
+    padding: 8px 16px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .PdfDownload button:hover {
+    background-color: #45a049;
+  }
+  .Navigation {
+    width: 100%;
+    height: 100vh;
+    max-height: 10vh;
+    background: black;
+    color: white;
+    position: sticky;
+    top: 0;
+}
+.Navigation .Links{
+  padding: 20px;
+}
+.Navigation a{
+  color: white;
+  text-decoration: none;
+  margin: 10px;
+  font-size: 1.5rem;
+  animation: glow 1s infinite ;
+  background: transparent;
+}
+.Navigation button{
+  margin-right: 130px;
+  position: relative;
+  float: right;
+  box-shadow: 0px 0px 5px 1px #f49a2e;
+  display: flex;
+  padding: 8px 30px;
+  background-color: black;
+  border: none;
+  color: white;
+}
+/* .Navigation button span:nth-child(1){
+  position: absolute;
+	top: 0;
+	right: -10;
+	width: 40%;
+	height: 3px;
+	background: linear-gradient(to right, #171618, #f49a2e);
+	animation: animate1 2s linear infinite;
+}
+.Navigation button span:nth-child(2){
+  position: absolute;
+	top: 9;
+	right: 0;
+	height: 33%;
+	width: 3px;
+	background: linear-gradient(to bottom, #171618, #f49a2e);
+	animation: animate2 2s linear infinite;
+	animation-delay: 1s;
+}
+.Navigation button span:nth-child(3){
+  position: absolute;
+	bottom: 0;
+	right: -20;
+	width: 30%;
+	height: 3px;
+	background: linear-gradient(to left, #171618, #f49a2e);
+	animation: animate3 2s linear infinite;
+}
+
+.Navigation button span:nth-child(4){
+  position: absolute;
+	top: 0;
+	left: 0;
+	height: 50%;
+	width: 3px;
+	background: linear-gradient(to top, #171618, #f49a2e);
+	animation: animate4 2s linear infinite;
+	animation-delay: 1s;
+} */
+.Navigation button:hover{
+  color: #f49a2e;
+
+}
+.Navigation button p{
+  margin-top: 3px;
+  margin-bottom: 0;
+  margin-left: 15px;
+  font-size: 1rem;
+  display: block;
+  width: 100%;
+  height: 100%;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 700;
+  padding-right: 2.5%;
+  margin-right: 0px;
+  font-size: 1.2rem;
+  transition: 0.3s;
+  opacity: 0;
+}
+.Navigation button p:hover{
+  transition: 0.3s;
+  opacity: 1;
+  font-weight: 700;
+}
+
+#neonShadow{
+  height:40px;
+  width:150px;
+  border:none;
+  border-radius:50px;
+  transition:0.3s;
+  background-color:rgba(156, 161, 160,0.3);
+  animation: glow 1s infinite ;
+  transition:0.5s;
+}
+#neonShadow:hover{
+  transform:translateX(-20px)rotate(30deg);
+  border-radius:5px;
+  background-color:#c3bacc;
+  transition:0.5s;
+}
+@keyframes glow{
+  0%{
+  box-shadow: 5px 5px 20px rgb(224, 114, 23),-5px -5px 20px rgb(231, 143, 27);}
+  
+  50%{
+  box-shadow: 5px 5px 20px rgb(81, 224, 210),-5px -5px 20px rgb(81, 224, 210)
+  }
+  100%{
+  box-shadow: 5px 5px 20px rgb(182, 108, 11),-5px -5px 20px rgb(93, 52, 168)
+  }
+}
+
+  @media (max-width: 768px) {
+    .popUpTable {
+      font-size: 14px;
+    }
+  }
+  

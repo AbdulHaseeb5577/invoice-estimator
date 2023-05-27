@@ -9,6 +9,7 @@ import { DELETE_ORDER } from './mutation/mutations';
 import { PLACE_ORDER } from './mutation/mutations';
 import { VIEW_POPUP_ESTIMATOR } from './mutation/mutations'
 import { ApolloClient } from 'apollo-client';
+import
 
 const token = localStorage.getItem('token');
 // console.log('view', token);
@@ -47,6 +48,7 @@ export const View = () => {
   const [selectedOrderId, setSelectedOrderId] = React.useState(null);
   const [deleteInvoiceEstimator] = useMutation(DELETE_ORDER);
   const [orderPlace] = useMutation(PLACE_ORDER);
+  const [popupData, setPopupData] = React.useState(null);
 
   console.log ("selectedOrderId",selectedOrderId)
   const handleDelete = async (id) => {
@@ -91,7 +93,7 @@ export const View = () => {
   const HandleView = async (id) => {
     setSelectedOrderId(id);
     setModalOpen(true);
-
+  
     try {
       const { data } = await client.mutate({
         mutation: VIEW_POPUP_ESTIMATOR,
@@ -102,7 +104,8 @@ export const View = () => {
           headers: headers
         }
       });
-      // Handle the response data as needed
+  
+      setPopupData(data); // Store the response data in the state variable
       console.log(data);
     } catch (error) {
       console.log(error);
@@ -123,19 +126,22 @@ export const View = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        const rowsData = data.data.invoiceestimator_view.map((item) => ({
-          id: item.id,
-          name: item.customer_name,
-          discount: item.discount_amount,
-          address: item.customer_address,
-          number: item.estimate_id,
-          price: item.total,
-          status: item.order_status,
-        }));
-        setRows(rowsData);
+        if (data && data.data && data.data.invoiceestimator_view) {
+          const rowsData = data.data.invoiceestimator_view.map((item) => ({
+            id: item.id,
+            name: item.customer_name,
+            discount: item.discount_amount,
+            address: item.customer_address,
+            number: item.estimate_id,
+            price: item.total,
+            status: item.order_status,
+          }));
+          setRows(rowsData);
+        }
       })
       .catch((error) => console.error(error));
   }, []);
+  
 
   const columns = React.useMemo(
     () => [
@@ -212,40 +218,65 @@ export const View = () => {
                 Your Invoice Estimator Pdf is Generated. Download Your Invoice Pdf.
               </h2>
               <table className="popUpTable">
-                <thead>
-                <tr className="popUpTableHead">
-                  <th>Name</th>
-                  <th>Fitting Charges</th>
-                  <th>Quantity</th>
-                  <th>Product Price</th>
-                  <th>Total</th>
-                </tr>
-                </thead>
-
-                <div className="GrandTotalsec">
-                <div>
+  <thead>
+    <tr className="popUpTableHead">
+      <th>Name</th>
+      <th>Fitting Charges</th>
+      <th>Quantity</th>
+      <th>Product Price</th>
+      <th>Total</th>
+    </tr>
+  </thead>
+  <tbody>
+    {popupData &&
+      popupData.popupInvoiceEstimatorView &&
+      popupData.popupInvoiceEstimatorView.edit_invoice_estimator &&
+      popupData.popupInvoiceEstimatorView.edit_invoice_estimator.invoice_data &&
+      popupData.popupInvoiceEstimatorView.edit_invoice_estimator.invoice_data.map(
+        (item, index) => (
+          <tr key={index}>
+            <td>{item.name}</td>
+            <td>{popupData.popupInvoiceEstimatorView.status}</td>
+            <td>{item.quantity}</td>
+            <td>{item.price}</td>
+            <td>{item.total_product_price}</td>
+          </tr>
+        )
+      )}
+  </tbody>
+</table>
+<div colSpan="5" className="GrandTotalsec">
+        {popupData &&
+          popupData.popupInvoiceEstimatorView &&
+          popupData.popupInvoiceEstimatorView.edit_invoice_estimator && (
+            <>
+              <div>
                 <h2>Grand Total:</h2>
-                <p></p>
-                </div>
-                <div>
-                <h2>Discount amount:</h2>
-                <p></p>
-                </div>
-                <div>
-                <h2>Payable:</h2>
-                 <p></p>
-                 </div>
-                <div className="PdfDownload">
-                  <button
-                    onClick={() => {
-                      downloadPDF();
-                    }}
-                  >
-                    Download as PDF
-                  </button>
-                </div>
+                <p>
+                  {popupData.popupInvoiceEstimatorView.edit_invoice_estimator.total_with_currency}
+                </p>
               </div>
-              </table>
+              <div>
+                <h2>Discount amount:</h2>
+                <p>
+                  {popupData.popupInvoiceEstimatorView.edit_invoice_estimator.customer_discount_with_currency}
+                </p>
+              </div>
+              <div>
+                <h2>Payable:</h2>
+                <p>
+                  {popupData.popupInvoiceEstimatorView.edit_invoice_estimator.discount_value_with_currency}
+                </p>
+              </div>
+              <div className="PdfDownload">
+                <button onClick={() => downloadPDF()}>Download as PDF</button>
+              </div>
+            </>
+          )}
+      </div>
+
+
+
 
             </div>
           </div>

@@ -145,7 +145,7 @@ export const Create = () =>{
     const token = localStorage.getItem('token');
     console.log("create",token);
     if (!token) {
-      navigate('/login');
+      navigate('/');
     }
   }, [navigate]);
   const [selectedRow, setSelectedRow] = React.useState('');
