@@ -54,8 +54,8 @@ const columns = [
     renderCell: (params) => (
       <select onChange={(event) => onCustomOptionChange(event, params.row.id)}>
         <option value="">-</option>
-        <option value="Yes">Yes</option>
-        <option value="No">No</option>
+        <option value="yes">Yes</option>
+        <option value="no">No</option>
       </select>
     ),
   },

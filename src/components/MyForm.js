@@ -32,7 +32,7 @@ export const MyForm = (props) => {
   const [formValues, setFormValues] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
-
+  const [invoiceEstimator, setInvoiceEstimator]=useState('');
   const onSubmit = async (data) => {
     console.log('Form data:', data);
     console.log('selected row:', selectedRow);
@@ -65,14 +65,14 @@ export const MyForm = (props) => {
       setFormValues(data);
       setIsModalOpen(true);
 
-      const { data: { invoice_estimator: invoiceEstimator } } = await invoIceEstimator({
+      const { data: { invoIceEstimator: { invoice_estimator: invoiceEstimator } } } = await invoIceEstimator({
         variables: { input },
         context: {
           headers: headers
         }
       });
-
       console.log("invoiceEstimator:", invoiceEstimator);
+      // console.log("invoiceEstimator:", invoiceEstimator, data, input);
     } catch (error) {
       console.error(error);
     }
@@ -115,7 +115,7 @@ export const MyForm = (props) => {
         <input type="submit" className="SubmitUser"/>
       </form>
       <Modal isOpen={isModalOpen} onRequestClose={() => setIsModalOpen(false)}>
-        <Popup selectedRow={selectedRow} formValues={formValues} closeModal={() => setIsModalOpen(false)} />
+        <Popup selectedRow={selectedRow} invoiceEstimator={invoiceEstimator} formValues={formValues} closeModal={() => setIsModalOpen(false)} />
       </Modal>
     </>
   );

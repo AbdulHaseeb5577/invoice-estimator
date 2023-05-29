@@ -9,7 +9,6 @@ import { DELETE_ORDER } from './mutation/mutations';
 import { PLACE_ORDER } from './mutation/mutations';
 import { VIEW_POPUP_ESTIMATOR } from './mutation/mutations'
 import { ApolloClient } from 'apollo-client';
-import
 
 const token = localStorage.getItem('token');
 // console.log('view', token);
@@ -106,6 +105,7 @@ export const View = () => {
       });
   
       setPopupData(data); // Store the response data in the state variable
+      console.log("check dataaaaaaa",data);
       console.log(data);
     } catch (error) {
       console.log(error);
@@ -236,7 +236,7 @@ export const View = () => {
         (item, index) => (
           <tr key={index}>
             <td>{item.name}</td>
-            <td>{popupData.popupInvoiceEstimatorView.status}</td>
+            <td>{item.custom_option}</td>
             <td>{item.quantity}</td>
             <td>{item.price}</td>
             <td>{item.total_product_price}</td>
