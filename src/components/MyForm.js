@@ -12,7 +12,7 @@ import { CREATE_INVOICE_MUTATION } from './mutation/mutations';
 Modal.setAppElement('#root');
 
 export const MyForm = (props) => {
-  const [invoIceEstimator] = useMutation(CREATE_INVOICE_MUTATION);
+  const [invoIceEstimatorMutation] = useMutation(CREATE_INVOICE_MUTATION);
   const selectedRow = props.selectedRow;
   const schema = yup.object().shape({
     discountAmount: yup.number().positive().integer().required("*"),
@@ -32,7 +32,8 @@ export const MyForm = (props) => {
   const [formValues, setFormValues] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
-  const [invoiceEstimator, setInvoiceEstimator]=useState('');
+  const [invoiceEstimatorData, setInvoiceEstimatorData] = useState('');
+
   const onSubmit = async (data) => {
     console.log('Form data:', data);
     console.log('selected row:', selectedRow);
@@ -65,13 +66,16 @@ export const MyForm = (props) => {
       setFormValues(data);
       setIsModalOpen(true);
 
-      const { data: { invoIceEstimator: { invoice_estimator: invoiceEstimator } } } = await invoIceEstimator({
+
+      const { data: { invoIceEstimator: { invoice_estimator: invoiceEstimator_Data } } } = await invoIceEstimatorMutation({
         variables: { input },
         context: {
           headers: headers
         }
       });
-      console.log("invoiceEstimator:", invoiceEstimator);
+      console.log("invoiceEstimator:", invoiceEstimator_Data);
+      setInvoiceEstimatorData(invoiceEstimator_Data);
+
       // console.log("invoiceEstimator:", invoiceEstimator, data, input);
     } catch (error) {
       console.error(error);
@@ -112,10 +116,11 @@ export const MyForm = (props) => {
         <label>coupon code:</label>
         <input type="number" placeholder="coupon code" {...register("couponcode")} />
         <p className="Error">{errors.couponcode?.message}</p>
-        <input type="submit" className="SubmitUser"/>
+        <input type="submit" className="SubmitUser" />
       </form>
-      <Modal isOpen={isModalOpen} onRequestClose={() => setIsModalOpen(false)}>
-        <Popup selectedRow={selectedRow} invoiceEstimator={invoiceEstimator} formValues={formValues} closeModal={() => setIsModalOpen(false)} />
+      <Modal isOpen={isModalOpen} onRequestClose={() => {setIsModalOpen(false);console.log
+      ('ppppppppppppppppp',invoiceEstimatorData)}}>
+        <Popup selectedRow={selectedRow} invoiceEstimator={invoiceEstimatorData} formValues={formValues} closeModal={() => setIsModalOpen(false)} />
       </Modal>
     </>
   );
