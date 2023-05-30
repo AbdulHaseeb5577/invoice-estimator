@@ -82,3 +82,23 @@ export const VIEW_POPUP_ESTIMATOR = gql`
     }
   }
 `;
+export const EDIT_INVOICE_ESTIMATOR_MUTATION = gql`
+  mutation editInvoiceEstimator($input: editInvoiceEstimatorInput!) {
+    editInvoiceEstimator(input: $input) {
+      edit_invoice_estimator {
+        discount_value_with_currency
+        total_with_currency
+        customer_discount_with_currency
+        invoice_data {
+          name
+          price
+          quantity
+          custom_option
+          total_product_price
+        }
+      }
+      message
+      status
+    }
+  }
+`;
