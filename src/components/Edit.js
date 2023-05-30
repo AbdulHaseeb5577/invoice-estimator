@@ -313,61 +313,48 @@ const MyForm = () => {
   }, [id,setValue]);
 
   const onSubmit = async (data) => {
-    const editableEstimateInvoiceId = 1733;
-const firstName = "qw bahi bahi mutiton";
-const lastName = "haseeb";
-const discountAmount = 12;
-const discountType = "fix";
-const customerEmail = "talk2yousaf@gmail.com";
-const customerAddress = "1, Mansehra";
-const customerNumber = 4322;
-const couponCode = "21";
-const productId = 4235;
-const productQty = 1;
-const customOption = "yes";
-
-const mutation = `mutation {
-  editInvoiceEstimator(input: {
-    editable_estimate_invoice_id: ${editableEstimateInvoiceId}
-    first_name: "${firstName}"
-    last_name: "${lastName}"
-    discount_amount: ${discountAmount}
-    discount_type: "${discountType}"
-    customer_email: "${customerEmail}"
-    customer_address: "${customerAddress}"
-    customer_number: ${customerNumber}
-    coupon_code: "${couponCode}"
-    chked_box_val: [
-      {
-        product_id: ${productId}
-        product_qty: ${productQty}
-      }
-    ]
-    custom_options: [
-      {
-        product_id: ${productId}
-        custom_option: "${customOption}"
-      }
-    ]
-  }) {
-    edit_invoice_estimator {
-      discount_value_with_currency
-      total_with_currency
-      customer_discount_with_currency
-      invoice_data {
-        name
-        price
-        quantity
-        custom_option
-        total_product_price
-      }
+    const input = {
+      editable_estimate_invoice_id: id,
+      first_name: data.firstName,
+      last_name: data.lastName,
+      discount_amount: data.discountAmount,
+      discount_type: data.discountType,
+      customer_email: data.email,
+      customer_address: data.address,
+      customer_number: data.customerNumber,
+      coupon_code: data.couponcode,
+      chked_box_val: Object.values(selectedRow).map((row) => ({
+        product_id: row.id,
+        product_qty: row.quantity,
+      })),
+      custom_options: Object.values(selectedRow).map((row) => ({
+        product_id: row.id,
+        custom_option: row.customoption,
+      })),
+    };
+  
+    const token = localStorage.getItem('token');
+    const headers = {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    };
+    console.log("edit token", token, headers);
+  
+    try {
+      const { data: { editInvoiceEstimator : {edit_invoice_estimator : editInvoiceEstimator_Data } } } = await editInvoiceEstimatorMutation({
+        variables: { input },
+        context: {
+          headers: headers
+        }
+      });
+  
+      console.log("editInvoiceEstimator result data", editInvoiceEstimator);
+      setEditInvoiceEstimator(editInvoiceEstimator_Data);
+      setIsModalOpen(true);
+    } catch (error) {
+      console.error(error);
     }
-    message
-    status
-  }
-}`;
-
-console.log(mutation);
+    console.log("heloooooooooooooooo",input)
   };
 
   return (
