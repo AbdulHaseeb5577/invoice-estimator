@@ -51,7 +51,7 @@ export const View = () => {
 
   console.log ("selectedOrderId",selectedOrderId)
   const handleDelete = async (id) => {
-    window.location.reload();
+    // window.location.reload();
     console.log('delete', id);
 
     try {
@@ -67,7 +67,7 @@ export const View = () => {
   };
 
   const handlePlaceOrder = async (id) => {
-    console.log('placed', id);
+    console.log('placed not placed yet', id);
 
     try {
       const { data } = await orderPlace({
@@ -75,9 +75,11 @@ export const View = () => {
           id,
         },
       });
-      console.log("place",data)
+      console.log("place succ",data)
+      alert("Order placed successfully!");
     } catch (error) {
       console.log(error);
+      alert("Failed to place the order. Please try again.");
     }
   };
 
@@ -117,7 +119,7 @@ export const View = () => {
   };
 
   const [rows, setRows] = React.useState([]);
-
+  const [loading, setLoading] = React.useState(true);
   React.useEffect(() => {
     fetch(graphqlEndpoint, {
       method: 'POST',
@@ -126,20 +128,21 @@ export const View = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        if (data && data.data && data.data.invoiceestimator_view) {
-          const rowsData = data.data.invoiceestimator_view.map((item) => ({
-            id: item.id,
-            name: item.customer_name,
-            discount: item.discount_amount,
-            address: item.customer_address,
-            number: item.estimate_id,
-            price: item.total,
-            status: item.order_status,
+        if (data && data?.data && data?.data?.invoiceestimator_view) {
+          const rowsData = data?.data?.invoiceestimator_view?.map((item) => ({
+            id: item?.id,
+            name: item?.customer_name,
+            discount: item?.discount_amount,
+            address: item?.customer_address,
+            number: item?.estimate_id,
+            price: item?.total,
+            status: item?.order_status,
           }));
           setRows(rowsData);
         }
       })
-      .catch((error) => console.error(error));
+      .catch((error) => console.error(error))
+      .finally(() => setLoading(false));
   }, []);
   
 
@@ -186,12 +189,16 @@ export const View = () => {
 
   return (
     <Box sx={{ height: 600, width: '100%' }}>
+          {loading ? (
+      <div>Loading...</div> // Render a loading indicator while data is being fetched
+    ) : (
       <DataGrid
         rows={rows}
         columns={columns}
         disableColumnFilter
         disableColumnSelector
         disableDensitySelector
+        sortingOrder={['desc']} 
         slots={{ toolbar: GridToolbar }}
         slotProps={{
           toolbar: {
@@ -202,6 +209,7 @@ export const View = () => {
           },
         }}
       />
+      )}
       <Modal
         open={modalOpen}
         onClose={handleCloseModal}

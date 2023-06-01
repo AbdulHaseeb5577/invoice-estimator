@@ -45,7 +45,7 @@ function ProductsList(props) {
 const columns = [
   { field: 'name', headerName: 'Name', flex: 1 },
   { field: 'image', headerName: 'Image', flex: 2, renderCell: (params) => <img src={params.value?.url} alt={params.row.name} style={{ width: '40%', height: '100%' }}/> },
-  { field: 'quantity', headerName: 'Quantity', flex: 2, renderCell: (params) => <input type="number" value={params.row.quantity} onChange={(event) => onQuantityChange(event, params.row.id)}/> },
+  { field: 'quantity', headerName: 'Quantity', flex: 2, renderCell: (params) => <input type="number" value={params.row.quantity} onChange={(event) => onQuantityChange(event, params.row.id)} min={0} /> },
   { field: 'price', headerName: 'Price', flex: 1, renderCell: (params) => `${params.row.price_range?.minimum_price?.regular_price?.value} ${params.row.price_range?.minimum_price?.regular_price?.currency}` },
   {
     field: 'customoption',
@@ -123,6 +123,7 @@ const onRowsSelectionHandler = (updatedSelectedRows) => {
         columns={columns}
         checkboxSelection
         disableRowSelectionOnClick
+        disableVirtualization
         onRowSelectionModelChange={(updatedSelectedRows) => onRowsSelectionHandler(updatedSelectedRows)}
 
         components={{Toolbar: GridToolbar}}

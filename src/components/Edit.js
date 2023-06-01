@@ -3,16 +3,16 @@ import Box from '@mui/material/Box';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { ApolloClient, InMemoryCache, ApolloProvider, useQuery, gql } from '@apollo/client';
 import React, { useEffect,useState } from 'react';
+import { Button, Modal } from '@mui/material';
 import { useForm } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
-import Modal from 'react-modal';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useLocation } from 'react-router-dom';
 import { useMutation } from '@apollo/client';
 import { EDIT_INVOICE_ESTIMATOR_MUTATION } from './mutation/mutations'
-Modal.setAppElement('#root');
+
 
 
 
@@ -165,6 +165,7 @@ function ProductsList(props) {
           columns={columns}
           checkboxSelection
           disableRowSelectionOnClick
+          disableVirtualization
           onRowSelectionModelChange={(updatedSelectedRows) => onRowsSelectionHandler(updatedSelectedRows)}
           components={{ Toolbar: GridToolbar }}
           componentsProps={{
@@ -205,15 +206,19 @@ function ProductsList(props) {
 
 
 export const Edit = () => {
-
+  const [modalOpen, setModalOpen] = React.useState(false);
   const [selectedRow, setSelectedRow] = React.useState('');
   const [editInvoiceEstimatorMutation] = useMutation(EDIT_INVOICE_ESTIMATOR_MUTATION);
-
+  const [editInvoiceEstimatorData, setEditInvoiceEstimatorData] = useState([]);
   const handleSelectedRow = (row) => {
     setSelectedRow(row);
   }
-
-
+  const handleCloseModal = () => {
+    setModalOpen(false);
+  };
+  const downloadPDF = () => {
+    // Add code to download the PDF
+  };
 
 
 
@@ -238,8 +243,6 @@ export const Edit = () => {
 
 
 const MyForm = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editInvoiceEstimator, setEditInvoiceEstimator] = useState('');
   const schema = yup.object().shape({
     discountAmount: yup.number().positive().integer().required("*"),
     firstName: yup.string().required("Name is Required Field"),
@@ -248,7 +251,7 @@ const MyForm = () => {
     email: yup.string().email("Invalid email").required("Email is a required field"),
     address: yup.string().required("Name is a required field"),
     customerNumber: yup.number().positive().integer().moreThan(0).required("Customer Number is a required field"),
-    couponcode: yup.string().required("Discount Type is a required field"),
+    couponcode: yup.string(),
   });
 
   const { register, handleSubmit, formState: { errors }, setValue } = useForm({
@@ -294,14 +297,15 @@ const MyForm = () => {
       .then((result) => {
         const data = result.data.invoiceestimator_edit;
         console.log(":::::::::::::::::Getting data from Query to populate", data,selectedRow);
+        const [firstName, lastName] = data.customer_name.split(' ');
         setValue('discountAmount', data.discount_amount);
-        setValue('firstName', data.customer_name);
-        setValue('lastName', '');
+        setValue('firstName',firstName);
+        setValue('lastName', lastName);
         setValue('email', data.customer_email);
-        setValue('discountType', data.discountType);
+        setValue('discountType', data.discount_type);
         setValue('address', data.customer_address);
         setValue('customerNumber', data.customer_number);
-        setValue('coupon_code', '');
+        setValue('couponcode', data.coupon_code);
 
         data.chked_box_val.forEach((product, index) => {
           setValue(`chked_box_val[${index}].product_id`, selectedRow.id);
@@ -313,13 +317,18 @@ const MyForm = () => {
   }, [id,setValue]);
 
   const onSubmit = async (data) => {
+    setModalOpen(true);
+    const idInt = parseInt(id);
+    const discountAmountFloat = parseFloat(data.discountAmount);
+    const discountTypeString = data.discountType.toString();
+    const dataEmailString = data.email.toString();
     const input = {
-      editable_estimate_invoice_id: id,
+      editable_estimate_invoice_id: idInt,
       first_name: data.firstName,
       last_name: data.lastName,
-      discount_amount: data.discountAmount,
-      discount_type: data.discountType,
-      customer_email: data.email,
+      discount_amount: discountAmountFloat,
+      discount_type: discountTypeString,
+      customer_email: dataEmailString,
       customer_address: data.address,
       customer_number: data.customerNumber,
       coupon_code: data.couponcode,
@@ -329,7 +338,7 @@ const MyForm = () => {
       })),
       custom_options: Object.values(selectedRow).map((row) => ({
         product_id: row.id,
-        custom_option: row.customoption,
+        custom_option: row.customoption || "",
       })),
     };
   
@@ -339,9 +348,9 @@ const MyForm = () => {
       "Authorization": `Bearer ${token}`
     };
     console.log("edit token", token, headers);
-  
+
     try {
-      const { data: { editInvoiceEstimator : {edit_invoice_estimator : editInvoiceEstimator_Data } } } = await editInvoiceEstimatorMutation({
+      const { data: { editInvoiceEstimator } } = await editInvoiceEstimatorMutation({
         variables: { input },
         context: {
           headers: headers
@@ -349,50 +358,61 @@ const MyForm = () => {
       });
   
       console.log("editInvoiceEstimator result data", editInvoiceEstimator);
-      setEditInvoiceEstimator(editInvoiceEstimator_Data);
-      setIsModalOpen(true);
+      setEditInvoiceEstimatorData(editInvoiceEstimator)
     } catch (error) {
       console.error(error);
     }
     console.log("heloooooooooooooooo",input)
   };
 
+
   return (
     <>
       <DatePicker placeholderText={'12/30/2023'} className="UserDate" />
       <form className="UserForm" onSubmit={handleSubmit(onSubmit)}>
-        <label>Discount Amount:</label>
-        <input type="number" placeholder="Discount Amount" {...register("discountAmount")} />
-        <p className="Error">{errors.discountAmount?.message}</p>
-        <label>Discount Type:</label>
-        <select {...register("discountType")}>
-          <option value="fix">Fix</option>
-          <option value="percentage">Percentage</option>
-        </select>
-        <p className="Error">{errors.discountType?.message}</p>
-        <label>Customer First Name:</label>
-        <input type="text" placeholder="Customer First Name:" {...register("firstName")} />
-        <p className="Error">{errors.firstName?.message}</p>
-        <label>Customer Last Name:</label>
-        <input type="text" placeholder="Customer Last Name:" {...register("lastName")} />
-        <p className="Error">{errors.lastName?.message}</p>
-        <label>Email:</label>
-        <input type="text" placeholder="Email:" {...register("email")} />
-        <p className="Error">{errors.email?.message}</p>
-        <label>Address:</label>
-        <input type="text" placeholder="Address:" {...register("address")} />
-        <p className="Error">{errors.address?.message}</p>
-        <label>Customer Number:</label>
-        <input type="text" placeholder="Customer Number:" {...register("customerNumber")} />
-        <p className="Error">{errors.customerNumber?.message}</p>
-        <label>coupon code:</label>
-        <input type="number" placeholder="coupon code" {...register("couponcode")} />
-        <p className="Error">{errors.couponcode?.message}</p>
-        <button type="submit" className="SubmitUser">Submit</button>
-      </form>
-      <Modal isOpen={isModalOpen} onRequestClose={() => {setIsModalOpen(false);
-      console.log('ppppppppppppppppp',editInvoiceEstimator)}}>
-      </Modal>
+  <div className="form-row">
+    <div className="form-column">
+      <label>Discount Amount:</label>
+      <input type="number" placeholder="Discount Amount" {...register("discountAmount")} min={0} onWheel={(e) => e.currentTarget.blur()}  />
+      <p className="Error">{errors.discountAmount?.message}</p>
+
+      <label>Discount Type:</label>
+      <select {...register("discountType")}>
+        <option value="fix">Fix</option>
+        <option value="percent">Percentage</option>
+      </select>
+      <p className="Error">{errors.discountType?.message}</p>
+
+      <label>Customer First Name:</label>
+      <input type="text" placeholder="Customer First Name:" {...register("firstName")} />
+      <p className="Error">{errors.firstName?.message}</p>
+
+      <label>Customer Last Name:</label>
+      <input type="text" placeholder="Customer Last Name:" {...register("lastName")} />
+      <p className="Error">{errors.lastName?.message}</p>
+    </div>
+
+    <div className="form-column">
+      <label>Email:</label>
+      <input type="text" placeholder="Email..." {...register("email")} />
+      <p className="Error">{errors.email?.message}</p>
+
+      <label>Customer Address:</label>
+      <input name="address" placeholder="Address" type="text" autoComplete="street-address" {...register("address")} />
+      <p className="Error">{errors.address?.message}</p>
+
+      <label>Customer Number:</label>
+      <input type="number" placeholder="Customer Number" {...register("customerNumber")} />
+      <p className="Error">{errors.customerNumber?.message}</p>
+
+      <label>Coupon Code:</label>
+      <input type="text" placeholder="Coupon Code" {...register("couponcode")} />
+      <p className="Error">{errors.couponcode?.message}</p>
+    </div>
+  </div>
+
+  <input type="submit" className="SubmitUser" />
+</form>
     </>
   );
 };
@@ -412,12 +432,94 @@ const MyForm = () => {
 
 
 
-      
+      console.log("poooooooooooooooooopupedit",editInvoiceEstimatorData)
   return (
     <ApolloProvider client={client}>
       <MyForm selectedRow={selectedRow} />
       <ProductsList handleSelectedRow={handleSelectedRow} />
+      <Modal
+        open={modalOpen}
+        onClose={handleCloseModal}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box className="View-popup">
+          <Button onClick={handleCloseModal} className="CloseButton View">
+            Close
+          </Button>
+          <div>
+            <div className="popup-content">
+              <h2>
+                Your Invoice Estimator Pdf is Generated. Download Your Invoice Pdf.
+              </h2>
+              <table className="popUpTable">
+  <thead>
+    <tr className="popUpTableHead">
+      <th>Name</th>
+      <th>Fitting Charges</th>
+      <th>Quantity</th>
+      <th>Product Price</th>
+      <th>Total</th>
+    </tr>
+  </thead>
+  <tbody>
+    {editInvoiceEstimatorData &&
+      editInvoiceEstimatorData.edit_invoice_estimator &&
+      editInvoiceEstimatorData.edit_invoice_estimator.invoice_data &&
+      editInvoiceEstimatorData.edit_invoice_estimator.invoice_data.map(
+        (item, index) => (
+          <tr key={index}>
+            <td>{item.name}</td>
+            <td>{item.custom_option}</td>
+            <td>{item.quantity}</td>
+            <td>{item.price}</td>
+            <td>{item.total_product_price}</td>
+          </tr>
+        )
+      )}
+  </tbody>
+</table>
+<div colSpan="5" className="GrandTotalsec">
+        {editInvoiceEstimatorData &&
+          editInvoiceEstimatorData.edit_invoice_estimator && (
+            <>
+              <div>
+                <h2>Grand Total:</h2>
+                <p>
+                  {editInvoiceEstimatorData.edit_invoice_estimator.total_with_currency}
+                </p>
+              </div>
+              <div>
+                <h2>Discount amount:</h2>
+                <p>
+                  {editInvoiceEstimatorData.edit_invoice_estimator.customer_discount_with_currency}
+                </p>
+              </div>
+              <div>
+                <h2>Payable:</h2>
+                <p>
+                  {editInvoiceEstimatorData.edit_invoice_estimator.discount_value_with_currency}
+                </p>
+              </div>
+              <div className="PdfDownload">
+                <button onClick={() => downloadPDF()}>Download as PDF</button>
+              </div>
+            </>
+          )}
+      </div>
+
+
+
+
+            </div>
+          </div>
+        </Box>
+      </Modal>
     </ApolloProvider>
+    
 
   )
 };
+
+export default Edit;
+

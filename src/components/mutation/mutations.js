@@ -83,7 +83,7 @@ export const VIEW_POPUP_ESTIMATOR = gql`
   }
 `;
 export const EDIT_INVOICE_ESTIMATOR_MUTATION = gql`
-  mutation editInvoiceEstimator($input: editInvoiceEstimatorInput!) {
+  mutation editInvoiceEstimator($input: EditInvoiceInput!) {
     editInvoiceEstimator(input: $input) {
       edit_invoice_estimator {
         discount_value_with_currency

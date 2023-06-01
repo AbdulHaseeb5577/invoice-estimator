@@ -1,4 +1,6 @@
-
+body{
+  font-family: Arial, Helvetica, sans-serif;
+}
 .ProductImage img {
     width: 100%;
     max-width: 550px;
@@ -26,10 +28,25 @@ td {
 }
 
 .UserForm {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
-
+.form-row {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+}
+.form-column {
+  width: 45%;
+}
+.Error {
+  color: red;
+  font-size: 14px;
+}
+.SubmitUser {
+  margin-top: 20px;
+}
 .UserForm input {
     width: 98%;
     border: 2px solid #F8F2A7;
@@ -39,27 +56,19 @@ td {
     margin-bottom: 0px;
     border-radius: 20px;
     padding-left: 20px;
+    margin-top: 12px;
 }
 .View-popup{
     background-color: white;
     width: 80%;
     margin: auto;
-    margin-top: 30px;
+    margin-top: 112px;
     padding-top: 20px;
     padding-left: 40px;
     padding-right: 40px;
     height: 80vh;
 }
-.UserForm select{
-    width: 98%;
-    border: 2px solid #F8F2A7;
-    color: #4B5F5B;
-    transition: all 500ms ease-out;
-    height: 40px;
-    margin-bottom: 0px;
-    border-radius: 20px;
-    padding-left: 20px;
-}
+
 .UserForm label {
     font-size: 18px;
     margin: 0px 15px;
@@ -68,8 +77,13 @@ td {
 
 .UserForm select {
     width: 100%;
-    height: 40px;
-    margin-bottom: 20px;
+    height: 45px;
+    margin-top: 15px;
+    border: 2px solid #F8F2A7;
+    color: #4B5F5B;
+    transition: all 500ms ease-out;
+    border-radius: 20px;
+    padding-left: 20px;
 }
 
 .UserForm input::placeholder {
@@ -93,7 +107,7 @@ td {
     font-size: 16px;
     border: 2px solid #F8F2A7;
     border-radius: 20px;
-    margin: 20px 2px;
+    margin: 20px 45px;
 }
 .ProductGrid {
     margin-top: 20px;
@@ -286,6 +300,7 @@ margin-bottom: 20px;
     color: white;
     position: sticky;
     top: 0;
+    z-index: 99999;
 }
 .Navigation .Links{
   padding: 20px;
@@ -295,7 +310,6 @@ margin-bottom: 20px;
   text-decoration: none;
   margin: 10px;
   font-size: 1.5rem;
-  /* animation: glow 1s infinite ; */
   background: transparent;
 }
 .Navigation button{
