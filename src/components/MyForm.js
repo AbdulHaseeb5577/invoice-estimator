@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import { useForm } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
@@ -84,8 +85,11 @@ export const MyForm = (props) => {
 
   return (
     <>
-      <DatePicker selected={selectedDate} onChange={date => setSelectedDate(date)} placeholderText={'12/30/2023'} className="UserDate" />
+    <div >
+      <DatePicker selected={selectedDate} onChange={date => setSelectedDate(date)} placeholderText={'please slect date'} className="UserDate" />
+      </div>
       <form className="UserForm" onSubmit={handleSubmit(onSubmit)}>
+
   <div className="form-row">
     <div className="form-column">
       <label>Discount Amount:</label>
@@ -117,7 +121,7 @@ export const MyForm = (props) => {
       <input name="address" placeholder="Address" type="text" autoComplete="street-address" {...register("address")} />
       <p className="Error">{errors.address?.message}</p>
 
-      <label>Customer Number:</label>
+      <label>Customer Phone Number:</label>
       <input type="number" placeholder="Customer Number" {...register("customerNumber")} />
       <p className="Error">{errors.customerNumber?.message}</p>
 

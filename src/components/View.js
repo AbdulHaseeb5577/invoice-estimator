@@ -51,20 +51,26 @@ export const View = () => {
 
   console.log ("selectedOrderId",selectedOrderId)
   const handleDelete = async (id) => {
-    // window.location.reload();
-    console.log('delete', id);
-
+    // Show confirmation dialog
+    const confirmDelete = window.confirm("Are you sure you want to delete this Estema?");
+    if (!confirmDelete) {
+      return;
+    }
+  
     try {
-      const { data } = await deleteInvoiceEstimator({
+      await deleteInvoiceEstimator({
         variables: {
           id,
         },
       });
-      console.log("delete",data)
+      // Remove the deleted item from the local state rows
+      setRows((prevRows) => prevRows.filter((row) => row.id !== id));
+      console.log("Delete successful");
     } catch (error) {
       console.log(error);
     }
   };
+  
 
   const handlePlaceOrder = async (id) => {
     console.log('placed not placed yet', id);
@@ -198,7 +204,9 @@ export const View = () => {
         disableColumnFilter
         disableColumnSelector
         disableDensitySelector
-        sortingOrder={['desc']} 
+        defaultSortModel={[
+          { field: 'id', sort: 'desc' }, // Replace 'columnName' with the actual field name you want to sort by
+        ]}
         slots={{ toolbar: GridToolbar }}
         slotProps={{
           toolbar: {

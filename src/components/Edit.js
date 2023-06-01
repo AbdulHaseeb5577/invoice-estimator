@@ -65,6 +65,7 @@ const PRODUCTS_QUERY = gql`
 
 
 function ProductsList(props) {
+  const [errorMessage, setErrorMessage] = React.useState('');
   const columns = [
     { field: 'name', headerName: 'Name', flex: 1 },
     {
@@ -75,18 +76,18 @@ function ProductsList(props) {
         <img src={params.value?.url} alt={params.row.name} style={{ width: '40%', height: '100%' }} />
       ),
     },
-    {
-      field: 'quantity',
-      headerName: 'Quantity',
-      flex: 2,
-      renderCell: (params) => (
+    { field: 'quantity', headerName: 'Quantity', flex: 2, renderCell: (params) =>(
+      <div>
         <input
           type="number"
           value={params.row.quantity}
           onChange={(event) => onQuantityChange(event, params.row.id)}
+          min={1} // Set minimum value to 1
+          max={50} // Set maximum value to 50
         />
-      ),
-    },
+        {errorMessage && <p className='errorqty'>{errorMessage}</p>}
+      </div>
+    ), },
     {
       field: 'price',
       headerName: 'Price',
@@ -123,16 +124,33 @@ function ProductsList(props) {
   };
 
   const onQuantityChange = (event, id) => {
-    const newQuantity = parseInt(event.target.value);
-    const updatedSelectedRows = { ...selectedRow };
-    updatedSelectedRows[id] = { ...updatedSelectedRows[id], quantity: newQuantity };
-
-    // Update customOption field
-    const existingCustomOption = updatedSelectedRows[id]?.customoption;
-    updatedSelectedRows[id] = { ...updatedSelectedRows[id], customoption: existingCustomOption || '' };
-
-    setSelectedRows(updatedSelectedRows);
-    props.handleSelectedRow(Object.values(updatedSelectedRows));
+    const newQuantity = event.target.value;
+    let errorMessage = '';
+  
+    if (newQuantity !== null && newQuantity !== "") {
+      const quantityValue = parseInt(newQuantity);
+  
+      if (quantityValue > 0 && quantityValue <= 50) {
+        const updatedSelectedRows = { ...selectedRow };
+        updatedSelectedRows[id] = { ...updatedSelectedRows[id], quantity: quantityValue };
+  
+        // Update customOption field
+        const existingCustomOption = updatedSelectedRows[id]?.customoption;
+        updatedSelectedRows[id] = { ...updatedSelectedRows[id], customoption: existingCustomOption || '' };
+  
+        setSelectedRows(updatedSelectedRows);
+        props.handleSelectedRow(Object.values(updatedSelectedRows));
+      } else {
+        // Set error message for quantity outside the allowed range
+        errorMessage = "Quantity must be between 1 and 50.";
+      }
+    } else {
+      // Set error message for null or empty quantity
+      errorMessage = "Quantity cannot be null or empty.";
+    }
+  
+    // Update the state with the error message
+    setErrorMessage(errorMessage);
   };
 
   const onRowsSelectionHandler = (updatedSelectedRows) => {
@@ -401,7 +419,7 @@ const MyForm = () => {
       <input name="address" placeholder="Address" type="text" autoComplete="street-address" {...register("address")} />
       <p className="Error">{errors.address?.message}</p>
 
-      <label>Customer Number:</label>
+      <label>Customer Phone Number:</label>
       <input type="number" placeholder="Customer Number" {...register("customerNumber")} />
       <p className="Error">{errors.customerNumber?.message}</p>
 
@@ -411,7 +429,7 @@ const MyForm = () => {
     </div>
   </div>
 
-  <input type="submit" className="SubmitUser" />
+  <input type="submit" className="UpdateUser" value="Update" />
 </form>
     </>
   );

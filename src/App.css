@@ -48,7 +48,7 @@ td {
   margin-top: 20px;
 }
 .UserForm input {
-    width: 98%;
+    width: 100%;
     border: 2px solid #F8F2A7;
     color: #4B5F5B;
     transition: all 500ms ease-out;
@@ -414,6 +414,17 @@ margin-bottom: 20px;
   100%{
   box-shadow: 5px 5px 20px rgb(182, 108, 11),-5px -5px 20px rgb(93, 52, 168)
   }
+}
+.UpdateUser {
+  background-color: #45a049;
+  color: black !important;
+  font-size: 1rem;
+  width: 200px !important;
+  margin-bottom: 25px !important;
+}
+.errorqty{
+  color: red;
+  margin: 0;
 }
 
   @media (max-width: 768px) {
