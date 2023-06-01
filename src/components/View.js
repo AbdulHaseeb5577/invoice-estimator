@@ -204,7 +204,7 @@ export const View = () => {
         disableColumnFilter
         disableColumnSelector
         disableDensitySelector
-        defaultSortModel={[
+        sortModel={[
           { field: 'id', sort: 'desc' }, // Replace 'columnName' with the actual field name you want to sort by
         ]}
         slots={{ toolbar: GridToolbar }}

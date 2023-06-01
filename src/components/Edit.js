@@ -351,14 +351,15 @@ const MyForm = () => {
       customer_number: data.customerNumber,
       coupon_code: data.couponcode,
       chked_box_val: Object.values(selectedRow).map((row) => ({
-        product_id: row.id,
+        product_id: row.id, // Add product_id field
         product_qty: row.quantity,
       })),
       custom_options: Object.values(selectedRow).map((row) => ({
-        product_id: row.id,
+        product_id: row.id, // Add product_id field
         custom_option: row.customoption || "",
       })),
     };
+    
   
     const token = localStorage.getItem('token');
     const headers = {
